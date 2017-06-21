@@ -44,6 +44,7 @@ type AuthRes struct {
 }
 
 //RegisterUser is an HTTP Router Handle for registering new users
+// nolint: gocyclo
 func (cba *CorkboardAuth) RegisterUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req RegisterUserReq
@@ -108,6 +109,7 @@ func (cba *CorkboardAuth) RegisterUser() http.HandlerFunc {
 }
 
 //AuthUser is an HTTP Router Handle for Authentication new users and return tokens
+// nolint: gocyclo
 func (cba *CorkboardAuth) AuthUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req AuthReq
@@ -174,7 +176,7 @@ func (cba *CorkboardAuth) AuthUser() http.HandlerFunc {
 //PublicKey is a way to get the public key to verify tokens
 func (cba *CorkboardAuth) PublicKey() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		pem, err := cba.getPublicPem()
+		pem, err := cba.GetPublicPem()
 		if err != nil {
 			writeResponse(w, http.StatusInternalServerError, &ErrorsRes{Errors: []ErrorRes{ErrorRes{Message: err.Error()}}})
 			return

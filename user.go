@@ -52,19 +52,16 @@ func (cba *CorkboardAuth) updateUser(user *User) error {
 		return err
 	}
 	_, err = cba.bucket.Upsert(getUserKey(id), user, 0)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (cba *CorkboardAuth) findUser(userEmail string) (*User, error) {
-	query := gocb.NewN1qlQuery(fmt.Sprintf("SELECT `email`, `password`, `sites`, `id` FROM `%s` WHERE _type = 'User' AND email = $1 LIMIT 1", cba.bucket.Name())).AdHoc(true)
+	query := gocb.NewN1qlQuery(fmt.Sprintf("SELECT `email`, `password`, `sites`, `id` FROM `%s` WHERE _type = 'User' AND email = $1 LIMIT 1", cba.bucket.Name())).AdHoc(true) //nolint: gas
 	res, err := cba.bucket.ExecuteN1qlQuery(query, []interface{}{userEmail})
 	if err != nil {
 		return nil, err
 	}
-	defer res.Close()
+	defer res.Close() //nolint: errcheck
 	user := new(User)
 	for res.Next(user) {
 		return user, nil
@@ -73,12 +70,12 @@ func (cba *CorkboardAuth) findUser(userEmail string) (*User, error) {
 }
 
 func (cba *CorkboardAuth) findUserFromSite(userEmail string, siteID uuid.UUID) (*User, error) {
-	query := gocb.NewN1qlQuery(fmt.Sprintf("SELECT `email`, `password`, `sites`, `id` FROM `%s` WHERE _type = 'User' AND email = $1 AND ANY site IN sites SATISFIES site = $2 END LIMIT 1", cba.bucket.Name())).AdHoc(true)
+	query := gocb.NewN1qlQuery(fmt.Sprintf("SELECT `email`, `password`, `sites`, `id` FROM `%s` WHERE _type = 'User' AND email = $1 AND ANY site IN sites SATISFIES site = $2 END LIMIT 1", cba.bucket.Name())).AdHoc(true) //nolint: gas
 	res, err := cba.bucket.ExecuteN1qlQuery(query, []interface{}{userEmail, siteID.String()})
 	if err != nil {
 		return nil, err
 	}
-	defer res.Close()
+	defer res.Close() //nolint: errcheck
 	user := new(User)
 	for res.Next(user) {
 		return user, nil

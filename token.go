@@ -29,7 +29,9 @@ func (cba *CorkboardAuth) generateUserToken(user *User) (string, error) {
 	return token.SignedString(cba.privateKey)
 }
 
-func (cba *CorkboardAuth) getPublicPem() ([]byte, error) {
+//GetPublicPem gets the public for the passed in private key.
+//Returns the bytes of the key in pem format.
+func (cba *CorkboardAuth) GetPublicPem() ([]byte, error) {
 	pubDer, err := x509.MarshalPKIXPublicKey(cba.privateKey.Public())
 	if err != nil {
 		return nil, err
