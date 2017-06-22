@@ -48,9 +48,9 @@ func New(config *Config) (*CorkboardAuth, error) {
 //Router returns the basic router router for the auth endpoints
 func (cba *CorkboardAuth) Router() *httprouter.Router {
 	router := httprouter.New()
-	router.HandlerFunc("POST", "/api/register", cba.RegisterUser())
-	router.HandlerFunc("POST", "/api/authenticate", cba.AuthUser())
-	router.HandlerFunc("GET", "/api/public_key", cba.PublicKey())
+	router.POST("/api/register", cba.RegisterUser())
+	router.POST("/api/authenticate", cba.AuthUser())
+	router.GET("/api/public_key", cba.PublicKey())
 	return router
 }
 

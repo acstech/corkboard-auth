@@ -10,6 +10,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/julienschmidt/httprouter"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -45,8 +46,8 @@ type AuthRes struct {
 
 //RegisterUser is an HTTP Router Handle for registering new users
 // nolint: gocyclo
-func (cba *CorkboardAuth) RegisterUser() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (cba *CorkboardAuth) RegisterUser() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		var req RegisterUserReq
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
@@ -110,8 +111,8 @@ func (cba *CorkboardAuth) RegisterUser() http.HandlerFunc {
 
 //AuthUser is an HTTP Router Handle for Authentication new users and return tokens
 // nolint: gocyclo
-func (cba *CorkboardAuth) AuthUser() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (cba *CorkboardAuth) AuthUser() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		var req AuthReq
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
@@ -174,8 +175,8 @@ func (cba *CorkboardAuth) AuthUser() http.HandlerFunc {
 }
 
 //PublicKey is a way to get the public key to verify tokens
-func (cba *CorkboardAuth) PublicKey() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (cba *CorkboardAuth) PublicKey() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		pem, err := cba.GetPublicPem()
 		if err != nil {
 			writeResponse(w, http.StatusInternalServerError, &ErrorsRes{Errors: []ErrorRes{ErrorRes{Message: err.Error()}}})
