@@ -12,6 +12,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	uuid "github.com/satori/go.uuid"
+	//uuid "github.com/satori/go.uuid"
 )
 
 //ErrorRes is when something in the API goes wrong
@@ -29,14 +30,14 @@ type RegisterUserReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Confirm  string `json:"confirm"`
-	SiteID   string `json:"siteId"`
+	//SiteID   string `json:"siteId"`
 }
 
 //AuthReq is a request to authenticate a user
 type AuthReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	SiteID   string `json:"siteId"`
+	//SiteID   string `json:"siteId"`
 }
 
 //AuthRes is a response from the API for authenticating a user
@@ -60,17 +61,21 @@ func (cba *CorkboardAuth) RegisterUser() httprouter.Handle {
 		if req.Email == "" {
 			errs = append(errs, ErrorRes{Message: "Must include an email address"})
 		}
-		if req.SiteID == "" {
-			errs = append(errs, ErrorRes{Message: "Must include a siteId"})
-		} else {
-			var id uuid.UUID
-			id, err = uuid.FromString(req.SiteID)
-			if err != nil {
-				errs = append(errs, ErrorRes{Message: "siteId is not a proper ID"})
-			} else {
-				req.SiteID = id.String() //this is to force a certain format
-			}
-		}
+
+		//I don't think we need any of this siteID stuff
+		// if req.SiteID == "" {
+		// 	errs = append(errs, ErrorRes{Message: "Must include a siteId"})
+		// } else {
+		// else {
+		// 	var id uuid.UUID
+		// 	id, err = uuid.FromString(req.SiteID)
+		// 	if err != nil {
+		// 		errs = append(errs, ErrorRes{Message: "siteId is not a proper ID"})
+		// 	} else {
+		// 		req.SiteID = id.String() //this is to force a certain format
+		// 	}
+		// }
+
 		if req.Password == "" {
 			errs = append(errs, ErrorRes{Message: "Must supply a password"})
 		}
@@ -93,7 +98,7 @@ func (cba *CorkboardAuth) RegisterUser() httprouter.Handle {
 				err = cba.addUser(&User{
 					Email:    req.Email,
 					Password: base64.StdEncoding.EncodeToString(cryptPass),
-					Sites:    []string{req.SiteID},
+					//Sites:    []string{req.SiteID},
 				})
 				if err != nil {
 					writeResponse(w, http.StatusInternalServerError, &ErrorsRes{Errors: []ErrorRes{ErrorRes{Message: err.Error()}}})
@@ -127,21 +132,29 @@ func (cba *CorkboardAuth) AuthUser() httprouter.Handle {
 		if req.Password == "" {
 			errs = append(errs, ErrorRes{Message: "Must supply a password"})
 		}
-		if req.SiteID == "" {
-			errs = append(errs, ErrorRes{Message: "Must supply a siteId"})
-		} else {
-			var id uuid.UUID
-			id, err = uuid.FromString(req.SiteID)
-			if err != nil {
-				errs = append(errs, ErrorRes{Message: "siteId is not a proper ID"})
-			} else {
-				req.SiteID = id.String() //this is to force a certain format
-			}
-		}
+
+		//more SiteID nonsense
+
+		// if req.SiteID == "" {
+		// 	errs = append(errs, ErrorRes{Message: "Must supply a siteId"})
+		// } else {
+		// else {
+		// 	var id uuid.UUID
+		// 	id, err = uuid.FromString(req.SiteID)
+		// 	if err != nil {
+		// 		errs = append(errs, ErrorRes{Message: "siteId is not a proper ID"})
+		// 	} else {
+		// 		req.SiteID = id.String() //this is to force a certain format
+		// 	}
+		// }
+
 		if len(errs) > 0 {
 			writeResponse(w, http.StatusBadRequest, &ErrorsRes{Errors: errs})
 			return
 		}
+
+		//TODO: Right here is where we look for the correct user in the database!
+		//We need to re-implement
 		id, _ := uuid.FromString(req.SiteID) //Already checked above
 		user, err := cba.findUserFromSite(req.Email, id)
 		if err != nil {
@@ -186,7 +199,7 @@ func (cba *CorkboardAuth) PublicKey() httprouter.Handle {
 		w.WriteHeader(http.StatusOK)
 		_, err = w.Write(pem)
 		if err != nil {
-			fmt.Println("Could not write to respone: ", err)
+			fmt.Println("Could not write to response: ", err)
 		}
 	}
 }
