@@ -7,40 +7,47 @@ import (
 	"errors"
 	"io/ioutil"
 
-	"github.com/couchbase/gocb"
 	"github.com/julienschmidt/httprouter"
 )
 
 //CorkboardAuth is an instance of the Corkboard Auth server
 type CorkboardAuth struct {
-	bucket     *gocb.Bucket
+	//bucket     *gocb.Bucket
 	privateKey *rsa.PrivateKey
 }
 
 //Config is the configuration values for creating a new CorkboardAuth
 type Config struct {
-	CBConnection   string
-	CBBucket       string
-	CBBucketPass   string
+	//CBConnection   string
+	//CBBucket       string
+	//CBBucketPass   string
 	PrivateRSAFile string
 }
 
+//TODO: Definitely need to change "New" so it points to the correct
+//database
+
+//Can I put environment variable or an RSA key into a Heroku app?
+
 //New creates a new CorkboardAuth
 func New(config *Config) (*CorkboardAuth, error) {
-	cluster, err := gocb.Connect(config.CBConnection)
-	if err != nil {
-		return nil, err
-	}
-	bucket, err := cluster.OpenBucket(config.CBBucket, config.CBBucketPass)
-	if err != nil {
-		return nil, err
-	}
+	// cluster, err := gocb.Connect(config.CBConnection)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// bucket, err := cluster.OpenBucket(config.CBBucket, config.CBBucketPass)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	//TODO: connect to the database
+
 	privateKey, err := getPrivate(config.PrivateRSAFile)
 	if err != nil {
 		return nil, err
 	}
 	return &CorkboardAuth{
-		bucket:     bucket,
+		//bucket:     bucket,
 		privateKey: privateKey,
 	}, nil
 }

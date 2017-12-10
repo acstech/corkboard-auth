@@ -12,9 +12,9 @@ import (
 
 func main() {
 	auth, err := corkboardauth.New(&corkboardauth.Config{
-		CBConnection:   os.Getenv("CB_CONNECTION"),
-		CBBucket:       os.Getenv("CB_BUCKET"),
-		CBBucketPass:   os.Getenv("CB_BUCKET_PASS"),
+		// CBConnection:   os.Getenv("CB_CONNECTION"),
+		// CBBucket:       os.Getenv("CB_BUCKET"),
+		// CBBucketPass:   os.Getenv("CB_BUCKET_PASS"),
 		PrivateRSAFile: os.Getenv("CB_PRIVATE_RSA"),
 	})
 	if err != nil {
